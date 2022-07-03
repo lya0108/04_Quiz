@@ -1,132 +1,120 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import *
+from random import randint
 
+def show_frame(frame):
+    frame.tkraise()
 
-# functions
-def choice_checker(question, valid_list, error):
+def correct_show(num):
+    if num == 1:
+        correct.config(text="Correct")
+    elif num == 2:
+        correct.config(text="Incorrect")
+    elif num == 3:
+        correct.config(text="Please Enter A Number")
 
-    valid = False
-    while not valid:
+def easy_question(frame):
+    global answer
+
+    number1 = randint(1, 25)
+    number2 = randint(1, 50)
+    q = ("Add {} and {}".format(number1, number2))
+    answer = number1 + number2
+    question_label = Label(frame, text=q, width=len(q))
+    question_label.grid(padx=10, pady=10)
+    return answer
+
+def normal_question(frame):
+    global answer
+
+    number1 = randint(1, 25)
+    number2 = randint(1, 50)
+    q = ("Add {} and {}".format(number1, number2))
+    answer = number1 + number2
+    question_label = Label(frame, text=q, width=len(q))
+    question_label.grid(padx=10, pady=10)
+    return answer
+
+def hard_question(frame):
+    global answer
+
+    number1 = randint(1, 25)
+    number2 = randint(1, 50)
+    q = ("Add {} and {}".format(number1, number2))
+    answer = number1 + number2
+    question_label = Label(frame, text=q, width=len(q))
+    question_label.grid(padx=10, pady=10)
+    return answer
+
+def answer_check(entry):
+    global answer
+    global correct
+
+    try:
+        entry = int(entry.get())
         
-        # asks user for choice
-        response = input(question).lower()
+        if entry == answer:
+            correct_show(1)
+        else:
+            correct_show(2)
 
-        # checks if input is in list
-        for item in valid_list:
-            if response == item[0] or response == item:
-                return item
-        
-        print(error)
-        print()
+    except ValueError:
+        correct_show(3)
 
-def decorator(text, decoration, lines):
+# window, title, and size
+root = tk.Tk()
+root.title("Math Quiz")
+root.geometry("280x400")
 
-    ends = decoration * 5
-    statement = "{} {} {}".format(ends, text, ends)
-    text_length = len(statement)
+# frames
+mainpage = tk.Frame(root)
+instructions = tk.Frame(root)
+easy = tk.Frame(root)
+normal = tk.Frame(root)
+hard = tk.Frame(root)
 
-    if lines == "3":
-        print(decoration * text_length)
-        print(statement)
-        print(decoration * text_length)
-        return ""
+# puts frames in
+for frame in (mainpage, instructions, easy, normal, hard):
+    frame.grid(row=0, column=0, sticky='nsew')
 
-    elif lines == "2":
-        print("|",statement,"|")
+# mainpage labels
+mainpage_title1 = tk.Label(mainpage, text="Welcome To Andy's Math Quiz")
+mainpage_title1.grid(padx=10, pady=0)
+mainpage_title2 = tk.Label(mainpage, text="Please Select A Difficulty Or Instructions For Help")
+mainpage_title2.grid(padx=10, pady=0)
 
-    elif lines == "1":
-        print(statement)
-        return ""
+# adds buttons in mainpage and switches frames when clicked
+mainpage_easy_btn = tk.Button(mainpage, text="Easy", command=lambda:show_frame(easy))
+mainpage_easy_btn.grid(padx=10, pady=10)
+mainpage_normal_btn = tk.Button(mainpage, text="Normal", command=lambda:show_frame(normal))
+mainpage_normal_btn.grid(padx=10, pady=10)
+mainpage_hard_btn = tk.Button(mainpage, text="Hard", command=lambda:show_frame(hard))
+mainpage_hard_btn.grid(padx=10, pady=10)
+mainpage_instructions_btn = tk.Button(mainpage, text="Instructions", command=lambda:show_frame(instructions))
+mainpage_instructions_btn.grid(padx=10, pady=10)
 
-    else:
-        return ""
-
-def boundary_check(question, low=None, high=None, exit_code = None):
-    
-    situation = ""
-
-
-    if low is not None and high is not None:
-        situation = "both"
-
-    elif low is not None and high is None:
-        situation = "low only"
-    
-    while True:
-
-        response = input(question).lower()
-        if response == exit_code:
-            return response
-
-        try:
-            response = int(response)
-
-            # checks input is not too high or low if both upper and lower bounds are specified
-            if situation == "both":
-                if response < low or response > high:
-                    print("Please Enter a Number Between {} and {}".format(low, high))
-                    continue
-
-            elif situation == "low only":
-                if response < low:
-                    print("Please Enter a Number That is More Than or Equal to {}".format(low))
-                    continue
-
-            return response
-
-        # checks input is an integer
-        except ValueError:
-            print("Please Enter an Integer (ie: a Number Which Does Not Have a Decimal)")
-            continue
-
-def check_rounds():
-    while True:
-        
-        print()
-        num_rounds = input("\nRounds: ")
-
-        round_error = "Please Type Either [enter] for Endless Mode\n or an Integer That is More Than 0"
-        # check rounds is an integer more than 0 for finite mode
-        if num_rounds != "":
-            try:
-                num_rounds = int(num_rounds)
-
-                # if num_rounds less than 1 go back to start of loop
-                if num_rounds < 1:
-                    print(round_error)
-                    print()
-                    continue
-            
-            # if num_rounds is not an integer go back to start of loop
-            except ValueError:
-                print(round_error)
-                print()
-                continue
-
-        return num_rounds
-
-def instructions():
-  print("instructions")
+# easy frame
+easy_title = tk.Label(easy, text="You Chose Easy Mode")
+easy_title.grid(padx=10, pady=10)
+easy_question(easy)
+ans = (tk.Entry(easy))
+ans.grid(padx=10, pady=10)
+easy_btn = tk.Button(easy, text="Submit", command=lambda:answer_check(ans))
+easy_btn.grid(padx=10, pady=10)
+easy_mainpage = tk.Button(easy, text="Back To Main Menu", command=lambda:show_frame(mainpage))
+easy_mainpage.grid(column=1, padx=10, pady=10)
+correct = tk.Label(easy, text="")
+correct.grid(row=5, column=0, padx=10, pady=10)
 
 
-# main routine
-# code for colour
-print("\x1b[38;2;0;255;255m")
 
-# lists of valid responses
-yes_no_list = ["yes", "no"]
-diff = ["Easy", "Normal", "Hard", "Asian"]
+# instructions frame
+instructions_title = tk.Label(instructions, text="Instructions")
+instructions_title.grid(padx=10, pady=10)
+instructions_btn = tk.Button(instructions, text="Back To Main Menu", command=lambda:show_frame(mainpage))
+instructions_btn.grid(padx=10, pady=10)
 
-# list to hold game history / summary
-game_summary = []
+show_frame(mainpage)
 
-# asks if the user has played before, if not shows instructions
-intro = choice_checker("Is This Your First Time Playing? ", yes_no_list, "Please Type Yes(y) Or No(n)")
-if intro == "yes":
-  instructions()
-
-rounds = check_rounds()
-
-difficulty = choice_checker("What Difficulty Would You Like To Play On? ", diff, "Please Type Easy(E), Normal(N), Or Hard(H)")
-
-end_game = "no"
-while end_game == "no":
-    yuyj = 1
+root.mainloop()
