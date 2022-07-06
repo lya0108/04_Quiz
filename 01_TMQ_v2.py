@@ -1,6 +1,5 @@
 import random
 import operator
-import time
 
 # functions
 def choice_checker(question, valid_list, error):
@@ -19,8 +18,8 @@ def choice_checker(question, valid_list, error):
         print(error)
         print()
 
-def boundary_check(question, low=None, high=None, code = None):
-    
+def boundary_check(question, low=None, high=None, code = None, truefalse = None):
+
     situation = ""
 
 
@@ -36,32 +35,69 @@ def boundary_check(question, low=None, high=None, code = None):
         if response == code:
             return response
 
-        try:
-            response = int(response)
-
-            # checks input is not too high or low if both upper and lower bounds are specified
-            if situation == "both":
-                if response < low or response > high:
-                    print("Please Enter a Number Between {} and {}".format(low, high))
-                    continue
-
-            elif situation == "low only":
-                if response < low:
-                    print("Please Enter a Number That is More Than or Equal to {}".format(low))
-                    continue
-
+        elif truefalse is not None:
+            response = float(response)
             return response
 
-        # checks input is an integer
-        except ValueError:
-            print("Please Enter an Integer (ie: a Number Which Does Not Have a Decimal)")
-            continue
+        else:
+            try:
+                response = int(response)
+
+                # checks input is not too high or low if both upper and lower bounds are specified
+                if situation == "both":
+                    if response < low or response > high:
+                        print("Please Enter a Number Between {} and {}".format(low, high))
+                        continue
+
+                elif situation == "low only":
+                    if response < low:
+                        print("Please Enter a Number That is More Than or Equal to {}".format(low))
+                        continue
+
+                return response
+
+            # checks input is an integer
+            except ValueError:
+                print("Please Enter an Integer (ie: a Number Which Does Not Have a Decimal)")
+                continue
+
+def decorator(text, decoration, lines):
+
+    ends = decoration * 5
+    statement = "{} {} {}".format(ends, text, ends)
+    text_length = len(statement)
+
+    if lines == 3:
+        print(decoration * text_length)
+        print(statement)
+        print(decoration * text_length)
+        return ""
+
+    elif lines == 2:
+        print("|",statement,"|")
+        return ""
+
+    elif lines == 1:
+        print(statement)
+        return ""
+
+    else:
+        return ""
 
 def instructions():
-    print("Math")
     print()
+    print("You Will Be Asked For The Difficulty Of The Quiz\nYou Can Choose From 3 Difficulties")
+    print("Easy(e), Normal(n), and Hard(h)")
     print()
-
+    print("Then You Will Need To Type The Amount Of Rounds You Wish To Play")
+    print("You Can Press Enter For Endless Mode And To Exit Endless Type 'xxx'")
+    print("Then The Quiz Will Start :)\n")
+    print("Here Are The Definitions For The Symbols")
+    print("'+' = Addition\n'-' = Subtraction\n'𝑥' = Multiplication\n'/' = Division\n'^' = Powers\n'%' = Modulus\n")
+    print("Easy = Addition, Subtraction, Multiplication")
+    print("Normal = Addition, Subtraction, Multiplication, Division")
+    print("Hard = Addition, Subtraction, Multiplication, Powers, Modulus\n")
+    print("FYI: Modulus is Remainder\nGood Luck Have Fun\n\n")
 
 # main routine
 # color (personal preference)
@@ -75,7 +111,7 @@ difficulty = ["easy", "normal", "hard"]
 game_history = []
 
 # game intro
-print("Welcome To Andy's Math Quiz")
+decorator("Welcome To Andy's Math Quiz", "=", 2)
 print()
 
 # asks user if they want the instructions
@@ -84,27 +120,28 @@ if first_time == "yes":
     instructions()
 
 # asks user for the difficulty they wish to play on
-diff_check = choice_checker("What Difficulty Would You Like To Play On? ", difficulty, "You Sure You've Read The Instructions?")
+print()
+diff_check = choice_checker("What Difficulty Would You Like To Play On? ", difficulty, "You Sure You've Read The Instructions? (Easy, Normal, Hard)")
 print()
 
 # easy mode - addition + subtraction
 if diff_check == "easy":
-    diff_mult = 1
+    add_inc = 1
     mult_inc = 1
     # takes strings and makes them operators (from stack overflow)
-    ops = {'+':operator.add, '-':operator.sub, '*':operator.mul}
+    ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul}
 
 # normal mode - addition + subtraction + multiplication + floor division
 if diff_check == "normal":
-    diff_mult = 10
+    add_inc = 10
     mult_inc = 2
-    ops = {'+':operator.add, '-':operator.sub, '*':operator.mul, '/':operator.truediv, '//':operator.floordiv}
+    ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul, '/':operator.truediv}
 
 # hard mode - addition + subtraction + multiplication + floor division + powers + modulus
 if diff_check == "hard":
-    diff_mult = 100
+    add_inc = 1000
     mult_inc = 3
-    ops = {'+':operator.add, '-':operator.sub, '*':operator.mul, '/':operator.truediv, '//':operator.floordiv, '**':operator.pow, '%':operator.mod}
+    ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul, '^':operator.pow, '%':operator.mod}
 
 
 # main loop
@@ -112,7 +149,7 @@ end_game = "yes"
 while end_game == "yes":
 
     # asks user for number of rounds
-    rounds = boundary_check("How Many Rounds? ", 1, None, "")
+    rounds = boundary_check("How Many Rounds? <enter> For Endless\n", 1, None, "", None)
 
     rounds_played = 0
 
@@ -122,6 +159,7 @@ while end_game == "yes":
     game = ""
     while game == "":
 
+        # ends game if you run out of rounds
         if rounds_played == rounds:
             print("You've Run Out Of Rounds!")
             break
@@ -132,10 +170,10 @@ while end_game == "yes":
         op = random.choice(list(ops.keys()))
         # generates numbers based on operator
         if op == "+" or op == "-":
-            num1 = random.randint(10, 50 * diff_mult)
-            num2 = random.randint(10, 50 * diff_mult)
+            num1 = random.randint(10, 50 * add_inc)
+            num2 = random.randint(10, 50 * add_inc)
 
-        elif op == "*" or op == "/" or op == "//" or op == "%":
+        elif op == "𝑥" or op == "/" or op == "%":
             num1 = random.randint(2, 12 * mult_inc)
             num2 = random.randint(2, 12 * mult_inc)
 
@@ -145,32 +183,57 @@ while end_game == "yes":
 
         # gets operator and applies to the 2 numbers
         answer = ops.get(op)(num1,num2)
-        round(answer)
+        # rounds to 1 decimal place
+        true_answer = round(answer, 1)
         question = ("What is {} {} {}?\n".format(num1, op, num2))
 
         # headings
         if rounds == "":
             print()
-            heading = ("Question {}".format(rounds_played))
-            print()
+            heading = decorator("Question {}".format(rounds_played), "=", 1)
         
         else:
             print()
-            heading = ("Question {} of {}".format(rounds_played, rounds))
-            print()
+            heading = decorator("Question {} of {}".format(rounds_played, rounds), "=", 1)
 
         # uses boundary_check as an integer checker
-        guess = boundary_check(question)
+        # if op = division will allow decimals
+        if op == "/":
+            guess = boundary_check(question, None, None, "xxx", "")
 
-        if guess == answer:
-            print("\x1b[38;2;0;255;100mCorrect")
-            print("\x1b[38;2;0;255;255m")
+        else:
+            guess = boundary_check(question, None, None, "xxx", None)
 
-        elif guess != answer:
-            print("\x1b[38;2;255;0;0Incorrect")
-            print("\x1b[38;2;0;255;255m")
+        if guess == "xxx":
+            break
         
-    
+        elif guess == true_answer:
+            correct = "\x1b[38;2;0;255;100mCorrect\x1b[38;2;0;255;255m"
+            print(correct)
+        
+        # tells user if they answered wrong then appends their mistake into the history
+        elif guess != true_answer:             
+            any_incorrect = 1
+            incorrect = "\x1b[38;2;255;0;0mIncorrect\x1b[38;2;0;255;255m"
+            print(incorrect)
+            outcome = ("{}{}: {}\n{} is The Answer".format(question, guess, incorrect, true_answer))
+            game_history.append(outcome)
+        
+    # if yes, restarts game
+    print()
     end_game = choice_checker("Would You Like To Play Again ", maybe, "Please Type Yes Or No")
 
-        
+
+
+if any_incorrect == 1:
+    # asks user if they want to see their mistakes
+    print()
+    results = choice_checker("Would You Like To See Your Mistakes? ", maybe, "Please Type Yes or No")
+    
+    if results == "yes":
+        for item in game_history:
+            print()
+            print(item)
+
+print()
+decorator("Thank You For Playing", "=", 2)
