@@ -183,8 +183,6 @@ while end_game == "yes":
 
         # gets operator and applies to the 2 numbers
         answer = ops.get(op)(num1,num2)
-        # rounds to 1 decimal place
-        true_answer = round(answer, 1)
         question = ("What is {} {} {}?\n".format(num1, op, num2))
 
         # headings
@@ -199,15 +197,19 @@ while end_game == "yes":
         # uses boundary_check as an integer checker
         # if op = division will allow decimals
         if op == "/":
+            true_answer = round(answer, 1)
             guess = boundary_check(question, None, None, "xxx", "")
 
         else:
+             # rounds to 1 decimal place
+            true_answer = round(answer)
             guess = boundary_check(question, None, None, "xxx", None)
 
         if guess == "xxx":
             break
         
         elif guess == true_answer:
+            any_incorrect = 0
             correct = "\x1b[38;2;0;255;100mCorrect\x1b[38;2;0;255;255m"
             print(correct)
         
@@ -237,3 +239,4 @@ if any_incorrect == 1:
 
 print()
 decorator("Thank You For Playing", "=", 2)
+print()
