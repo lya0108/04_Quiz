@@ -94,10 +94,10 @@ def instructions():
     print("Then The Quiz Will Start :)\n")
     print("Here Are The Definitions For The Symbols")
     print("'+' = Addition\n'-' = Subtraction\n'𝑥' = Multiplication\n'/' = Division\n'^' = Powers\n'%' = Modulus\n")
-    print("Easy = Addition, Subtraction, Multiplication")
-    print("Normal = Addition, Subtraction, Multiplication, Division")
-    print("Hard = Addition, Subtraction, Multiplication, Powers, Modulus\n")
-    print("FYI: Modulus is Remainder\nGood Luck Have Fun\n\n")
+    print("Easy = Addition, Subtraction, Multiplication (no negatives and no decimals)")
+    print("Normal = Addition, Subtraction, Multiplication, Division (allows negatives and no decimals)")
+    print("Hard = Addition, Subtraction, Multiplication, Division, Powers, Modulus (allows negatives and allows decimals)\n")
+    print("Extra Info: Modulus is Remainder\nGood Luck Have Fun\n\n")
 
 # main routine
 # color (personal preference)
@@ -124,24 +124,29 @@ print()
 diff_check = choice_checker("What Difficulty Would You Like To Play On? ", difficulty, "You Sure You've Read The Instructions? (Easy, Normal, Hard)")
 print()
 
-# easy mode - addition + subtraction
+# easy mode - addition + subtraction + multiplication (no negatives and no decimals)
 if diff_check == "easy":
+    # add_inc and mult_inc multiply the range of the random integers
     add_inc = 1
     mult_inc = 1
     # takes strings and makes them operators (from stack overflow)
     ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul}
 
-# normal mode - addition + subtraction + multiplication + floor division
+# normal mode - addition + subtraction + multiplication + division (allow negatives and no decimals)
 if diff_check == "normal":
+    # comment: line 129
     add_inc = 10
     mult_inc = 2
+    # comment: line 132
     ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul, '/':operator.truediv}
 
-# hard mode - addition + subtraction + multiplication + floor division + powers + modulus
+# hard mode - addition + subtraction + multiplication + division + powers + modulus (allow negatives and allow decimals)
 if diff_check == "hard":
+    # comment: line 129
     add_inc = 1000
     mult_inc = 3
-    ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul, '^':operator.pow, '%':operator.mod}
+    # comment: line 132
+    ops = {'+':operator.add, '-':operator.sub, '𝑥':operator.mul, '/':operator.truediv, '^':operator.pow, '%':operator.mod}
 
 
 # main loop
@@ -151,8 +156,10 @@ while end_game == "yes":
     # asks user for number of rounds
     rounds = boundary_check("How Many Rounds? <enter> For Endless\n", 1, None, "", None)
 
+    # resets the # of rounds played
     rounds_played = 0
 
+    # resets the random integers
     num1 = 0
     num2 = 0
 
@@ -181,9 +188,31 @@ while end_game == "yes":
             num1 = random.randint(3, 10)
             num2 = random.randint(3, 5)
 
+        default_question = ("What is {} {} {}?\n".format(num1, op, num2))
+        invert_question = ("What is {} {} {}?\n".format(num2, op, num1))
+
         # gets operator and applies to the 2 numbers
         answer = ops.get(op)(num1,num2)
-        question = ("What is {} {} {}?\n".format(num1, op, num2))
+        if diff_check == "easy":
+            if answer < 0:
+                answer = ops.get(op)(num2,num1)
+                question = invert_question
+
+            else:
+                question = default_question
+        
+        elif diff_check == "normal":
+            if op == "/":
+                num3 = num2 * num1
+                answer = num3/num2
+                question = ("What is {} {} {}?\n".format(num3, op, num2))
+
+            else:
+                question = default_question
+
+
+        else:
+            question = default_question
 
         # headings
         if rounds == "":
@@ -196,12 +225,14 @@ while end_game == "yes":
 
         # uses boundary_check as an integer checker
         # if op = division will allow decimals
-        if op == "/":
-            true_answer = round(answer, 1)
-            guess = boundary_check(question, None, None, "xxx", "")
+        if diff_check == "hard":
+            if op == "/":
+                # rounds to 1 decimal place
+                true_answer = round(answer, 1)
+                # allows 1 decimal place
+                guess = boundary_check(question, None, None, "xxx", "")
 
         else:
-             # rounds to 1 decimal place
             true_answer = round(answer)
             guess = boundary_check(question, None, None, "xxx", None)
 
@@ -209,13 +240,13 @@ while end_game == "yes":
             break
         
         elif guess == true_answer:
-            any_incorrect = 0
+            an_incorrect = False
             correct = "\x1b[38;2;0;255;100mCorrect\x1b[38;2;0;255;255m"
             print(correct)
         
         # tells user if they answered wrong then appends their mistake into the history
         elif guess != true_answer:             
-            any_incorrect = 1
+            an_incorrect = True
             incorrect = "\x1b[38;2;255;0;0mIncorrect\x1b[38;2;0;255;255m"
             print(incorrect)
             outcome = ("{}{}: {}\n{} is The Answer".format(question, guess, incorrect, true_answer))
@@ -227,7 +258,7 @@ while end_game == "yes":
 
 
 
-if any_incorrect == 1:
+if an_incorrect == True:
     # asks user if they want to see their mistakes
     print()
     results = choice_checker("Would You Like To See Your Mistakes? ", maybe, "Please Type Yes or No")
@@ -237,6 +268,7 @@ if any_incorrect == 1:
             print()
             print(item)
 
+print()
 print()
 decorator("Thank You For Playing", "=", 2)
 print()

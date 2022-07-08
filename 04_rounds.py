@@ -1,6 +1,47 @@
 import random
 
+def boundary_check(question, low=None, high=None, code = None, truefalse = None):
 
+    situation = ""
+
+
+    if low is not None and high is not None:
+        situation = "both"
+
+    elif low is not None and high is None:
+        situation = "low only"
+    
+    while True:
+
+        response = input(question).lower()
+        if response == code:
+            return response
+
+        elif truefalse is not None:
+            response = float(response)
+            return response
+
+        else:
+            try:
+                response = int(response)
+
+                # checks input is not too high or low if both upper and lower bounds are specified
+                if situation == "both":
+                    if response < low or response > high:
+                        print("Please Enter a Number Between {} and {}".format(low, high))
+                        continue
+
+                elif situation == "low only":
+                    if response < low:
+                        print("Please Enter a Number That is More Than or Equal to {}".format(low))
+                        continue
+
+                return response
+
+            # checks input is an integer
+            except ValueError:
+                print("Please Enter an Integer (ie: a Number Which Does Not Have a Decimal)")
+                continue
 
 def num_guess():
     while True:
@@ -44,9 +85,9 @@ while end_game == "no":
         heading = "Round {} of {}".format(rounds_played + 1, rounds)
 
     print(heading)
-    choose = int(input("enter a number"))
-
-    
+    choose = boundary_check("enter a number", None, None, "xxx", None)
+    if choose == "xxx":
+        break
 
     rounds_played += 1
 
