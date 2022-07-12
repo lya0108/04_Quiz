@@ -36,8 +36,12 @@ def boundary_check(question, low=None, high=None, code = None, truefalse = None)
             return response
 
         elif truefalse is not None:
-            response = float(response)
-            return response
+            try:
+                response = float(response)
+                return response
+
+            except ValueError:
+                print("Please Enter An Number")
 
         else:
             try:
@@ -58,7 +62,11 @@ def boundary_check(question, low=None, high=None, code = None, truefalse = None)
 
             # checks input is an integer
             except ValueError:
-                print("Please Enter an Integer (ie: a Number Which Does Not Have a Decimal)")
+                if truefalse is not None:
+                    print("Please Enter a Number")
+                
+                else:
+                    print("Please Enter an Integer (ie: A Number That Does Not Have An Decimal)")
                 continue
 
 def decorator(text, decoration, lines):
@@ -159,9 +167,10 @@ while end_game == "yes":
     # resets the # of rounds played
     rounds_played = 0
 
-    # resets the random integers
+    # resets values
     num1 = 0
     num2 = 0
+    num_correct = 0
 
     game = ""
     while game == "":
@@ -232,6 +241,10 @@ while end_game == "yes":
                 # allows 1 decimal place
                 guess = boundary_check(question, None, None, "xxx", "")
 
+            else:
+                true_answer = round(answer)
+                guess = boundary_check(question, None, None, "xxx", None)
+
         else:
             true_answer = round(answer)
             guess = boundary_check(question, None, None, "xxx", None)
@@ -241,6 +254,7 @@ while end_game == "yes":
         
         elif guess == true_answer:
             an_incorrect = False
+            num_correct += 1
             correct = "\x1b[38;2;0;255;100mCorrect\x1b[38;2;0;255;255m"
             print(correct)
         
@@ -252,6 +266,7 @@ while end_game == "yes":
             outcome = ("{}{}: {}\n{} is The Answer".format(question, guess, incorrect, true_answer))
             game_history.append(outcome)
         
+        print("You Got {} Out Of {} Questions Correct".format(num_correct, rounds_played))
     # if yes, restarts game
     print()
     end_game = choice_checker("Would You Like To Play Again ", maybe, "Please Type Yes Or No")
