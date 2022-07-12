@@ -171,6 +171,7 @@ while end_game == "yes":
     num1 = 0
     num2 = 0
     num_correct = 0
+    an_incorrect = 0
 
     game = ""
     while game == "":
@@ -197,12 +198,15 @@ while end_game == "yes":
             num1 = random.randint(3, 10)
             num2 = random.randint(3, 5)
 
+        # normal question
         default_question = ("What is {} {} {}?\n".format(num1, op, num2))
+        # question to prevent negative answers
         invert_question = ("What is {} {} {}?\n".format(num2, op, num1))
 
         # gets operator and applies to the 2 numbers
         answer = ops.get(op)(num1,num2)
         if diff_check == "easy":
+            # if easy mode 
             if answer < 0:
                 answer = ops.get(op)(num2,num1)
                 question = invert_question
@@ -214,6 +218,7 @@ while end_game == "yes":
             if op == "/":
                 num3 = num2 * num1
                 answer = num3/num2
+                # question to prevent decimal points
                 question = ("What is {} {} {}?\n".format(num3, op, num2))
 
             else:
@@ -233,8 +238,8 @@ while end_game == "yes":
             heading = decorator("Question {} of {}".format(rounds_played, rounds), "=", 1)
 
         # uses boundary_check as an integer checker
-        # if op = division will allow decimals
         if diff_check == "hard":
+            # if op = division will allow decimals
             if op == "/":
                 # rounds to 1 decimal place
                 true_answer = round(answer, 1)
@@ -248,32 +253,34 @@ while end_game == "yes":
         else:
             true_answer = round(answer)
             guess = boundary_check(question, None, None, "xxx", None)
-
+        
+        # if exit code is entered ends game
         if guess == "xxx":
             break
         
         elif guess == true_answer:
-            an_incorrect = False
             num_correct += 1
             correct = "\x1b[38;2;0;255;100mCorrect\x1b[38;2;0;255;255m"
             print(correct)
         
         # tells user if they answered wrong then appends their mistake into the history
         elif guess != true_answer:             
-            an_incorrect = True
+            an_incorrect += 1
             incorrect = "\x1b[38;2;255;0;0mIncorrect\x1b[38;2;0;255;255m"
             print(incorrect)
             outcome = ("{}{}: {}\n{} is The Answer".format(question, guess, incorrect, true_answer))
             game_history.append(outcome)
-        
-        print("You Got {} Out Of {} Questions Correct".format(num_correct, rounds_played))
+
+    print()
+    print("You Got {} Out Of {} Questions Correct".format(num_correct, rounds_played - 1))
+
     # if yes, restarts game
     print()
     end_game = choice_checker("Would You Like To Play Again ", maybe, "Please Type Yes Or No")
 
+    
 
-
-if an_incorrect == True:
+if an_incorrect >= 1:
     # asks user if they want to see their mistakes
     print()
     results = choice_checker("Would You Like To See Your Mistakes? ", maybe, "Please Type Yes or No")
